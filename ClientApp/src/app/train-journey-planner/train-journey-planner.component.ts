@@ -7,12 +7,13 @@ import { SorterService } from '../core/services/sorter.service';
 
 @Component({
   selector: 'app-train-journey-component',
-  templateUrl: './train-journey-planner.component.html'
+  templateUrl: './train-journey-planner.component.html',
+  styleUrls: ['./train-journey-planner.component.css']
 })
 export class TrainJourneyComponent implements OnInit {
 
   // local version of all journies
-  private trainJournies: TrainJourney[] = [];
+  private trainJournies: TrainJourney[];
 
   // Distinct list of all stations
   private allStations: string[]

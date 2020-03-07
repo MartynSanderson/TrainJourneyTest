@@ -1,8 +1,6 @@
 <h1>Train Journey Planner</h1>
 
-<p>Plan a Train Journey with us:</p>
-
-<ol>
+<ol *ngIf="trainJournies; else loading">
   <li>
     <span class="input-label">Travelling From</span>
     <select [(ngModel)]="selectedDepartFrom" (ngModelChange)="DepartFromOnChange()">
@@ -19,12 +17,30 @@
   </li>
 </ol>
 <div *ngIf="selectedTrainJourney">
-  <h2>Journey Details</h2>
+  <h3>Journey Details</h3>
   <ol>
-    <li>Travelling From: '{{selectedTrainJourney.DepartFrom}}'</li>
-    <li>Travelling To: '{{selectedTrainJourney.ArriveAt}}'</li>
-    <li>Changing at: '<span *ngFor="let station of selectedTrainJourney.ChangingAt">{{station}}</span>'</li>
-    <li>Travel Time: {{selectedTrainJourney.Time }} minutes</li>
+    <li><span class="input-label">Travelling From:</span> '{{selectedTrainJourney.DepartFrom}}'</li>
+    <li><span class="input-label">Travelling To:</span> '{{selectedTrainJourney.ArriveAt}}'</li>
+
+    
+    <li *ngIf="selectedTrainJourney.ChangingAt; else elseBlock">
+      <span class="input-label">Changing at:</span> '<span *ngFor="let station of selectedTrainJourney.ChangingAt">{{station}}</span>'
+    </li>
+    <ng-template #elseBlock>
+      <li>
+        <span class="input-label">Changing at:</span> No Changes, Direct Train!
+      </li>
+    </ng-template>
+
+    <li><span class="input-label">Travel Time:</span> {{selectedTrainJourney.Time }} minutes</li>
+
   </ol>
+
+
+   
   <button type="button" (click)="ClearSelection()">Clear Details</button>
 </div>
+
+<ng-template #loading>
+  Loading Train Details
+</ng-template>
