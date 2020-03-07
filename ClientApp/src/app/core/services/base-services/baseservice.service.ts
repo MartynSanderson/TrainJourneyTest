@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
-import { BaseReadOnlyService } from 'services/basereadonlyservice.service';
+import { BaseReadOnlyService } from 'services/base-services/basereadonlyservice.service';
 import { IDatabaseModel } from 'interfaces/IDatabaseModel'; 
 
 export abstract class BaseService<T extends IDatabaseModel> extends BaseReadOnlyService<T> {

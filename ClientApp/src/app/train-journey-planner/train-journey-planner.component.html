@@ -1,7 +1,11 @@
 <h1>Train Journey Planner</h1>
 
-<p>Plan a train Journey</p>
+<p>Plan a Train Journey with us:</p>
 
-<p aria-live="polite">Current count: <strong>{{ currentCount }}</strong></p>
-
-<button class="btn btn-primary" (click)="incrementCounter()">Increment</button>
+<table>
+  <tr *ngFor="let journey of trainJournies">
+    <td>{{ journey.DepartFrom }}</td>
+    <td>{{ journey.ArriveAt }}</td>
+    <td>{{ journey.Time }}</td>
+  </tr>
+</table>

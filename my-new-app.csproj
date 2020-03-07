@@ -25,11 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\core\core.module.ts" />
     <None Remove="ClientApp\src\app\shared\interfaces\IDatabaseModel.ts" />
     <None Remove="ClientApp\src\app\shared\models\TrainJourney.ts" />
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\core\core.module.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\shared\interfaces\IDatabaseModel.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\shared\models\TrainJourney.ts" />
   </ItemGroup>

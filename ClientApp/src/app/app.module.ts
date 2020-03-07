@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
+import { CoreModule } from './core/core.module';
+
 import { AppComponent } from 'components/app.component';
 import { NavMenuComponent } from 'components/nav-menu/nav-menu.component';
 import { HomeComponent } from 'components/home/home.component';
@@ -24,6 +26,7 @@ import { TrainJourneyComponent } from 'components/train-journey-planner/train-jo
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
+    CoreModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent },
