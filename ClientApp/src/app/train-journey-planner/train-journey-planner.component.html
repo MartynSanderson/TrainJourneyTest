@@ -2,10 +2,29 @@
 
 <p>Plan a Train Journey with us:</p>
 
-<table>
-  <tr *ngFor="let journey of trainJournies">
-    <td>{{ journey.DepartFrom }}</td>
-    <td>{{ journey.ArriveAt }}</td>
-    <td>{{ journey.Time }}</td>
-  </tr>
-</table>
+<ol>
+  <li>
+    <span class="input-label">Travelling From</span>
+    <select [(ngModel)]="selectedDepartFrom" (ngModelChange)="DepartFromOnChange()">
+      <option value="" selected>Travelling From...</option>
+      <option *ngFor="let station of allStations" [ngValue]="station">{{station}}</option>
+    </select>
+  </li>
+  <li>
+    <span class="input-label">Destination</span>
+    <select [(ngModel)]="selectedArriveAt" (ngModelChange)="ArriveAtOnChange()">
+      <option value="" selected>Travelling To...</option>
+      <option *ngFor="let station of allDestinationStations" [ngValue]="station">{{station}}</option>
+    </select>
+  </li>
+</ol>
+<div *ngIf="selectedTrainJourney">
+  <h2>Journey Details</h2>
+  <ol>
+    <li>Travelling From: '{{selectedTrainJourney.DepartFrom}}'</li>
+    <li>Travelling To: '{{selectedTrainJourney.ArriveAt}}'</li>
+    <li>Changing at: '<span *ngFor="let station of selectedTrainJourney.ChangingAt">{{station}}</span>'</li>
+    <li>Travel Time: {{selectedTrainJourney.Time }} minutes</li>
+  </ol>
+  <button type="button" (click)="ClearSelection()">Clear Details</button>
+</div>

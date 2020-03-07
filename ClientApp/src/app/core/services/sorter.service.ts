@@ -4,10 +4,10 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class SorterService {
 
-  property: string = null;
-  direction: number = 1;
+  private property: string = null;
+  private direction: number = 1;
 
-  sort(collection: any[], prop: any) {
+  public sort(collection: any[], prop: any) {
     this.property = prop;
     this.direction = (this.property === prop) ? this.direction * -1 : 1;
 
@@ -41,11 +41,11 @@ export class SorterService {
     });
   }
 
-  isString(val: any): boolean {
+  private isString(val: any): boolean {
     return (val && (typeof val === 'string' || val instanceof String));
   }
 
-  resolveProperty(path: string, obj: any) {
+  private resolveProperty(path: string, obj: any) {
     return path.split('.').reduce(function (prev, curr) {
       return (prev ? prev[curr] : undefined)
     }, obj || self)
