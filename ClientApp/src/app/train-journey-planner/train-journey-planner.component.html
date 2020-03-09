@@ -9,7 +9,7 @@
     </select>
   </li>
   <li>
-    <span class="input-label">Destination</span>
+    <span class="input-label">Travelling To</span>
     <select [(ngModel)]="selectedArriveAt" (ngModelChange)="ArriveAtOnChange()">
       <option value="" selected>Travelling To...</option>
       <option *ngFor="let station of allDestinationStations" [ngValue]="station">{{station}}</option>
@@ -24,7 +24,7 @@
 
     
     <li *ngIf="selectedTrainJourney.ChangingAt; else elseBlock">
-      <span class="input-label">Changing at:</span> '<span *ngFor="let station of selectedTrainJourney.ChangingAt">{{station}}</span>'
+      <span class="input-label">Changing at:</span> <span *ngFor="let station of selectedTrainJourney.ChangingAt">'{{station}}'</span>
     </li>
     <ng-template #elseBlock>
       <li>
@@ -35,9 +35,6 @@
     <li><span class="input-label">Travel Time:</span> {{selectedTrainJourney.Time }} minutes</li>
 
   </ol>
-
-
-   
   <button type="button" (click)="ClearSelection()">Clear Details</button>
 </div>
 
