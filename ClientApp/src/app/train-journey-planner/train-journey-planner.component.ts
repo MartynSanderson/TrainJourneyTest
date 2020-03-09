@@ -12,21 +12,18 @@ import { SorterService } from '../core/services/sorter.service';
 })
 export class TrainJourneyComponent implements OnInit {
 
-  // local version of all journies
+  // Local version of all journies from the datasource
   private trainJournies: TrainJourney[];
 
   // Distinct list of all stations
   private allStations: string[]
 
-  // Distinct list of all stations once a departure station has been selected
-  private allDestinationStations: string[];
-
   // Deliberately set to empty to ensure the 'Travelling From/To ...' options are selected as default
-  selectedDepartFrom: string = "";
-  selectedArriveAt: string = "";
+  selectedDepartureStation: string = "";
+  selectedDestinationStation: string = "";
 
   // Train Journey object to construct the text on the UI
-  selectedTrainJourney: TrainJourney;
+  selectedTrainJourney: TrainJourney = null;
 
   // DI both the trainjourney service and the Sorter service
   constructor(
@@ -34,12 +31,13 @@ export class TrainJourneyComponent implements OnInit {
     private sorterService: SorterService
   ) { }
 
+  // Implementation of angular oninit
   ngOnInit() {
 
-    // Get all possible train journeys from the service, and sort them by the DepartFrom field alphabetically
+    // Get all possible train journeys from the service
     this.trainJourneyService.getAll().subscribe((journies: TrainJourney[]) => {
 
-      // Get train journies
+      // Set local copy of train journies
       this.trainJournies = journies;
 
       // Sort by DepartFrom Name ASC
@@ -52,30 +50,31 @@ export class TrainJourneyComponent implements OnInit {
 
       })
 
-      // Get a list of distinct stations (Currenly uses departFrom, my in future need to union DepartFrom and ArriveAt)
+      /* Get a list of distinct stations
+      (Currenly uses departFrom, may in future need to union DepartFrom and ArriveAt if some stations are depart or arrive only)*/
       this.allStations = distinctJournies.map(dj => dj.DepartFrom)
 
     });
 
   }
 
-  // Event Handler for the DepartFrom Select Box
-  DepartFromOnChange() {
+  // Clears the user's journey details and selections
+  ClearJourneyDetails_OnClick() {
 
-    // Get a list of all destination train stations which are not also the departure station
-    this.allDestinationStations = this.allStations.filter((station) => {
-      return station.toLowerCase() !== this.selectedDepartFrom.toLowerCase();
-    });
+    this.selectedDepartureStation = '';
+    this.selectedDestinationStation = '';
+    this.selectedTrainJourney = null;
 
   }
 
-  // Event Handler for the ArriveAt Select box change
-  ArriveAtOnChange() {
+  // Function to calculate the user's journey, direct or indirect.
+  // This could be implemented inside the train journey service to abstract the complexity and make the service more reusable
+  CalculateJourneyDetails() {
 
     // Lookup to see if it's a direct route
     let directTrainJourney = this.trainJournies.find(tj =>
-      tj.DepartFrom.toLowerCase() === this.selectedDepartFrom.toLowerCase() &&
-      tj.ArriveAt.toLowerCase() === this.selectedArriveAt.toLowerCase()
+      tj.DepartFrom.toLowerCase() === this.selectedDepartureStation.toLowerCase() &&
+      tj.ArriveAt.toLowerCase() === this.selectedDestinationStation.toLowerCase()
     );
 
     // If it's a direct route, it's straightforward
@@ -87,13 +86,13 @@ export class TrainJourneyComponent implements OnInit {
 
       // Gets more complicated, get all stations with the "DepartFrom" which matches our user's selection
       let firstLegJournies = this.trainJournies.filter((journey, index, array) => {
-        return journey.DepartFrom.toLowerCase() === this.selectedDepartFrom.toLowerCase();
+        return journey.DepartFrom.toLowerCase() === this.selectedDepartureStation.toLowerCase();
       });
 
       // Get all stations with the "ArriveAt" which matches our user's chosen destination
       let secondLegJournies = this.trainJournies.filter((journey, index, array) => {
-        return journey.ArriveAt.toLowerCase() === this.selectedArriveAt.toLowerCase()
-          && journey.DepartFrom.toLowerCase() !== this.selectedDepartFrom;
+        return journey.ArriveAt.toLowerCase() === this.selectedDestinationStation.toLowerCase()
+          && journey.DepartFrom.toLowerCase() !== this.selectedDepartureStation;
       });
 
       // Set up an array for the indirect journey/s
@@ -113,29 +112,72 @@ export class TrainJourneyComponent implements OnInit {
       });
 
       // Order by time taken if required
-      if(indirectTrainJournies.length > 1)
+      if (indirectTrainJournies.length > 1)
         this.sorterService.sort(indirectTrainJournies, 'Time');
 
       // Set the first object to be selected as it's the quickest/only journey
       this.selectedTrainJourney = indirectTrainJournies[0];
 
     }
+  }
+
+  // The Click event for the plan journey button
+  PlanJourney_OnClick() {
+
+    this.CalculateJourneyDetails();
 
   }
 
-  // Clears the users' selections
-  ClearSelection() {
+  // The drop downs' on change event Handler
+  StationSelectors_OnChange() {
 
-    this.selectedDepartFrom = "";
-    this.selectedArriveAt = "";
+    // Check if the selected train journey has been invalidated by the change of departure or destination
+    if (this.selectedTrainJourney !== null &&
+      (this.selectedTrainJourney.ArriveAt.toLowerCase() !== this.selectedDestinationStation.toLowerCase() ||
+        this.selectedTrainJourney.DepartFrom.toLowerCase() !== this.selectedDepartureStation.toLowerCase())) {
+
+      // If the journey has been invalidated then nuke the train journey object and let the user recalculate via the button
+      this.selectedTrainJourney = null;
+
+    }
+
+  }
+
+  // Toggles the Departure and Destination stations
+  Toggle_OnClick() {
+
+    let tmpStation = this.selectedDepartureStation;
+
+    this.selectedDepartureStation = this.selectedDestinationStation;
+    this.selectedDestinationStation = tmpStation;
+
     this.selectedTrainJourney = null;
-  }
-
-  // Toggles the stations
-  ToggleDepartureAndDestinationStations() {
-
-
 
   }
 
+  // Databound string array for the Departure Stations
+  get AllDepartureStations(): string[] {
+
+    return this.allStations.filter((station) => { return station.toLowerCase() !== this.selectedDestinationStation.toLowerCase(); });
+
+  }
+
+  // Databound string array for the Destination Stations
+  get AllDestinationStations(): string[] {
+
+    return this.allStations.filter((station) => { return station.toLowerCase() !== this.selectedDepartureStation.toLowerCase(); });
+
+  }
+
+  // Function to let us know the user can now proceed to determine their journey
+  get IsReadyToDetermineJourney(): boolean {
+
+    return (this.selectedDepartureStation !== '' && this.selectedDestinationStation !== '');
+
+  }
+
+  // Function to determine if we should show the toggle button
+  get IsToggleVisible(): boolean {
+    return (this.selectedDepartureStation !== '' || this.selectedDestinationStation !== '')
+  }
 }

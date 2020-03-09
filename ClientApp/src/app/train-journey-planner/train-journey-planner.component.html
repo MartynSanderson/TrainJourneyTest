@@ -2,27 +2,33 @@
 
 <ol *ngIf="trainJournies; else loading">
   <li>
-    <span class="input-label">Travelling From</span>
-    <select [(ngModel)]="selectedDepartFrom" (ngModelChange)="DepartFromOnChange()">
-      <option value="" selected>Travelling From...</option>
-      <option *ngFor="let station of allStations" [ngValue]="station">{{station}}</option>
+    <span class="input-label">Departing From</span>
+    <select [(ngModel)]="selectedDepartureStation" (ngModelChange)="StationSelectors_OnChange()">
+      <option value="" selected>Select a station...</option>
+      <option *ngFor="let station of AllDepartureStations" [ngValue]="station">{{station}}</option>
+    </select>
+  </li>
+  <li *ngIf="IsToggleVisible">
+    <span class="input-label">&nbsp;</span><button class="btn-mini-form" type="button" (click)="Toggle_OnClick()">Toggle Stations</button>
+  </li>
+  <li>
+    <span class="input-label">Destination</span>
+    <select [(ngModel)]="selectedDestinationStation" (ngModelChange)="StationSelectors_OnChange()">
+      <option value="" selected>Select a station...</option>
+      <option *ngFor="let station of AllDestinationStations" [ngValue]="station">{{station}}</option>
     </select>
   </li>
   <li>
-    <span class="input-label">Travelling To</span>
-    <select [(ngModel)]="selectedArriveAt" (ngModelChange)="ArriveAtOnChange()">
-      <option value="" selected>Travelling To...</option>
-      <option *ngFor="let station of allDestinationStations" [ngValue]="station">{{station}}</option>
-    </select>
+    <button *ngIf="IsReadyToDetermineJourney" type="button" (click)="PlanJourney_OnClick()">Plan Journey</button>
   </li>
 </ol>
+
 <div *ngIf="selectedTrainJourney">
   <h3>Journey Details</h3>
   <ol>
     <li><span class="input-label">Travelling From:</span> '{{selectedTrainJourney.DepartFrom}}'</li>
     <li><span class="input-label">Travelling To:</span> '{{selectedTrainJourney.ArriveAt}}'</li>
 
-    
     <li *ngIf="selectedTrainJourney.ChangingAt; else elseBlock">
       <span class="input-label">Changing at:</span> <span *ngFor="let station of selectedTrainJourney.ChangingAt">'{{station}}'</span>
     </li>
@@ -35,7 +41,7 @@
     <li><span class="input-label">Travel Time:</span> {{selectedTrainJourney.Time }} minutes</li>
 
   </ol>
-  <button type="button" (click)="ClearSelection()">Clear Details</button>
+  <button type="button" (click)="ClearJourneyDetails_OnClick()">Clear Journey Details</button>
 </div>
 
 <ng-template #loading>
